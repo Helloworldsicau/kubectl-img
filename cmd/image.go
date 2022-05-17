@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/redhatxl/kubectl-img/pkg/kube"
+	"github.com/redhatxl/kubectl-img/pkg/mtable"
 	"github.com/spf13/cobra"
 	kv1 "k8s.io/api/apps/v1"
 	jobv1 "k8s.io/api/batch/v1"
@@ -138,6 +139,7 @@ func image(cmd *cobra.Command, args []string) error {
 no resource
 Usage:
   kubectl-img image [flags]
+
 Flags:
   -b, --cronjobs       show cronjobs image
   -e, --daemonsets     show daemonsets image
@@ -145,9 +147,19 @@ Flags:
   -h, --help           help for image
   -o, --jobs           show jobs image
   -f, --statefulsets   show statefulsets image
+
   -j, --json           show json format
 `)
 	}
 
+	// gen table
+	table := mtable.GenTable(deployMapList)
+	// json format
+	if json {
+		jsonStr, _ := table.Json(2)
+		fmt.Println(jsonStr)
+		return nil
+	}
+	table.PrintTable()
 	return nil
 }
